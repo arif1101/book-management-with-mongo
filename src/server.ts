@@ -16,17 +16,3 @@ async function main() {
 }
 
 main()
-
-
-
-
-
-
-
-
-
-
-
-
-// pass : 29j6ATFfFo6a2v2M
-// name : bookAdmin
