@@ -66,4 +66,10 @@ bookSchema.method('decrementStock', async function (quantity: number){
     await this.save();
 })
 
+bookSchema.pre('save', function (next) {
+  // Example: log when a book is saved
+  console.log(`Book "${this.title}" is being saved.`);
+  next();
+});
+
 export const Book = model<BookDocument>("Book", bookSchema);
