@@ -1,9 +1,9 @@
 import { model, Schema } from "mongoose";
-import { IBook } from "../interfaces/book.interface";
+import { BookMethods, IBook } from "../interfaces/book.interface";
 
+export interface BookDocument extends IBook, Document, BookMethods {}
 
-
-const bookSchema = new Schema<IBook>({
+const bookSchema = new Schema<BookDocument>({
     title : {
         type : String,
         required : true,
@@ -45,6 +45,15 @@ const bookSchema = new Schema<IBook>({
 },{
     versionKey : false,
     timestamps : true
+});
+
+bookSchema.method('decrementStock', async function (quantity: number){
+    if (this.copies < quantity) {
+        throw new Error("Not enough copies available");
+    }
+    this.copies -= quantity;
+    this.available = this.copies > 0;
+    await this.save();
 })
 
-export const Book = model<IBook>("Book", bookSchema)
+export const Book = model<BookDocument>("Book", bookSchema);

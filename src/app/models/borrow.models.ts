@@ -1,5 +1,7 @@
-import { model, Schema } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import {IBorrow } from "../interfaces/borrow.interface";
+import { Mode } from "fs";
+import { BookMethods } from "../interfaces/book.interface";
 
 const borrowSchema = new Schema<IBorrow>({
     book : {
@@ -24,6 +26,8 @@ const borrowSchema = new Schema<IBorrow>({
 },{
     versionKey: false,
     timestamps: true
-})
+});
+
+
 
 export const Borrow = model<IBorrow>("BorrowBook", borrowSchema)
