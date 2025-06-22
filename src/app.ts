@@ -8,9 +8,55 @@ app.use(express.json())
 app.use("/api", booksRoutes)
 app.use("/api", borrowsRoutes)
 
-app.get('/api', (req : Request, res : Response)=> {
+app.get('/', (req : Request, res : Response)=> {
     res.send("Welcome to Book Management system")
 })
+
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    message: "Validation failed",
+    success: false,
+    error: {
+      name: `Not Found Path ${req.originalUrl}`
+    }
+  });
+});
+
+app.use((err: any, req: Request, res: Response, next: Function) => {
+  let status = 500;
+  let message = err.message || "Internal Server Error";
+  let error = err;
+
+  if (err.name === "ValidationError") {
+    status = 400;
+    message = "Validation failed";
+    // Only include 'name' and 'errors'
+    error = {
+      name: err.name,
+      errors: err.errors
+    };
+  }else if (err.name === "CastError") {
+    status = 400;
+    message = "Validation failed";
+    error = {
+      name: err.name,
+      ...err
+    };
+  } else if (err.name === "StockError") {
+    status = err.status || 400;
+    message = "Validation failed";
+    error = {
+      name: err.name,
+      errors: err.errors
+    };
+  }
+
+  res.status(status).json({
+    message,
+    success: false,
+    error
+  });
+});
 
 
 export default app;

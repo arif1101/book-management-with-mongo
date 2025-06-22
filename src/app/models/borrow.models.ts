@@ -7,7 +7,7 @@ const borrowSchema = new Schema<IBorrow>({
     book : {
         type : Schema.Types.ObjectId,
         ref: "Book",
-        required: true
+        required: [true, "book id must need"]
     },
     quantity: {
         type : Number,
@@ -20,7 +20,7 @@ const borrowSchema = new Schema<IBorrow>({
     },
     dueDate : {
         type: Date,
-        required: true
+        required: [true, 'dueDate field not found']
     }
 
 },{

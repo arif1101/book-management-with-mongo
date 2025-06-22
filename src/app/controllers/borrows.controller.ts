@@ -6,7 +6,7 @@ import { Book } from "../models/books.models"
 export const borrowsRoutes = express.Router() 
 
 
-borrowsRoutes.post("/borrow", async (req: Request, res: Response): Promise<void> => {
+borrowsRoutes.post("/borrow", async (req: Request, res: Response, next: Function): Promise<void> => {
   try {
     const { book: bookId, quantity, dueDate } = req.body;
 
@@ -36,49 +36,49 @@ borrowsRoutes.post("/borrow", async (req: Request, res: Response): Promise<void>
     });
 
   } catch (error) {
-    console.error("Error borrowing book:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    next(error)
   }
 });
 
 
 
-borrowsRoutes.get("/borrow", async (req, res) => {
-  const summary = await Borrow.aggregate([
-    {
-      $group: {
-        _id: "$book",
-        totalQuantity: { $sum: "$quantity" }
+borrowsRoutes.get("/borrow", async (req: Request, res: Response, next: Function) => {
+  try{
+    const summary = await Borrow.aggregate([
+      {
+        $group: {
+          _id: "$book",
+          totalQuantity: { $sum: "$quantity" }
+        }
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "_id",
+          foreignField: "_id",
+          as: "bookInfo"
+        }
+      },
+      { $unwind: "$bookInfo" },
+      {
+        $project: {
+          _id: 0,
+          book: {
+            title: "$bookInfo.title",
+            isbn: "$bookInfo.isbn"
+          },
+          totalQuantity: 1
+        }
       }
-    },
-    {
-      $lookup: {
-        from: "books",
-        localField: "_id",
-        foreignField: "_id",
-        as: "bookInfo"
-      }
-    },
-    { $unwind: "$bookInfo" },
-    {
-      $project: {
-        _id: 0,
-        book: {
-          title: "$bookInfo.title",
-          isbn: "$bookInfo.isbn"
-        },
-        totalQuantity: 1
-      }
-    }
-  ]);
+    ]);
 
-  res.status(200).json({
-    success: true,
-    message: "Borrowed books summary retrieved successfully",
-    data: summary
-  });
+    res.status(200).json({
+      success: true,
+      message: "Borrowed books summary retrieved successfully",
+      data: summary
+    });
+  } catch(error){
+    next(error)
+  }
 });
 

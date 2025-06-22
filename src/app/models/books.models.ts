@@ -6,22 +6,22 @@ export interface BookDocument extends IBook, Document, BookMethods {}
 const bookSchema = new Schema<BookDocument>({
     title : {
         type : String,
-        required : true,
+        required : [true, "title is required"],
         trim : true
     },
     author : {
         type : String,
-        required : true,
+        required : [true, "need book author name"],
         trim : true
     },
     genre : {
         type : String,
-        required : true,
+        required : [true, "required genre from FICTION,NON_FICTION,SCIENCE,HISTORY,BIOGRAPHY,FANTASY"],
         enum : ["FICTION", "NON_FICTION", "SCIENCE", "HISTORY", "BIOGRAPHY", "FANTASY"],
     },
     isbn : {
         type : String,
-        required : true,
+        required : [true, "isbn number must be needed"],
         unique : true,
         trim : true
     },
@@ -31,7 +31,7 @@ const bookSchema = new Schema<BookDocument>({
     copies : {
         type : Number,
         required : true,
-        min : 0,
+        min : [0, "Copies must be a positive number"],
         validate : {
             validator : Number.isInteger,
             message : "Copies must be an integer value"
@@ -49,7 +49,17 @@ const bookSchema = new Schema<BookDocument>({
 
 bookSchema.method('decrementStock', async function (quantity: number){
     if (this.copies < quantity) {
-        throw new Error("Not enough copies available");
+    const customError = {
+        name: "StockError",
+        errors: {
+        copies: {
+            message: "Not enough copies available"
+        }
+        }
+    };
+    // Attach a status if you want
+    (customError as any).status = 400;
+    throw customError;
     }
     this.copies -= quantity;
     this.available = this.copies > 0;
