@@ -2,10 +2,11 @@ import express from "express"
 import type { Request, Response } from "express";
 import { Borrow } from "../models/borrow.models"
 import { Book } from "../models/books.models"
+import { formatError } from "../../utils/errorFormatter";
 
 export const borrowsRoutes = express.Router() 
 
-
+// -------- borrow book ---------
 borrowsRoutes.post("/borrow", async (req: Request, res: Response, next: Function): Promise<void> => {
   try {
     const { book: bookId, quantity, dueDate } = req.body;
@@ -35,13 +36,14 @@ borrowsRoutes.post("/borrow", async (req: Request, res: Response, next: Function
       data: borrow,
     });
 
-  } catch (error) {
-    next(error)
-  }
+  } catch (error: any) {
+    const {status, body} = formatError(error);
+    res.status(status).json(body)
+    }
 });
 
 
-
+// ------ borrow book summery --------
 borrowsRoutes.get("/borrow", async (req: Request, res: Response, next: Function) => {
   try{
     const summary = await Borrow.aggregate([
@@ -77,8 +79,9 @@ borrowsRoutes.get("/borrow", async (req: Request, res: Response, next: Function)
       message: "Borrowed books summary retrieved successfully",
       data: summary
     });
-  } catch(error){
-    next(error)
+  } catch(error: any){
+    const {status, body} = formatError(error);
+    res.status(status).json(body)
   }
 });
 

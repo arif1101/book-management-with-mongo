@@ -6,7 +6,7 @@ const borrowSchema = new mongoose_1.Schema({
     book: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "Book",
-        required: true
+        required: [true, "book id must need"]
     },
     quantity: {
         type: Number,
@@ -19,7 +19,7 @@ const borrowSchema = new mongoose_1.Schema({
     },
     dueDate: {
         type: Date,
-        required: true
+        required: [true, 'dueDate field not found']
     }
 }, {
     versionKey: false,

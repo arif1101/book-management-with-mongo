@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express"
 import { Book } from "../models/books.models";
+import { formatError } from "../../utils/errorFormatter";
 
 export const booksRoutes = express.Router()
 
@@ -14,8 +15,9 @@ booksRoutes.post('/books', async (req: Request, res: Response, next: Function) =
             message : "Book created successfully",
             data: book
         })
-    } catch(error){
-        next(error)
+    } catch (error: any) {
+        const {status, body} = formatError(error);
+        res.status(status).json(body)
     }
 })
 
@@ -36,8 +38,9 @@ booksRoutes.get('/books', async (req: Request, res: Response, next: Function) =>
             message : "Books retrieved successfully",
             data: books
         })
-    } catch(error){
-        next(error)
+    } catch (error: any) {
+        const {status, body} = formatError(error);
+        res.status(status).json(body)
     }
 })
 
@@ -53,8 +56,9 @@ booksRoutes.get('/books/:bookId', async (req: Request, res: Response,next: Funct
             message : "Book retrieved successfully",
             data: book
         })
-    } catch(error){
-        next(error)
+    } catch (error: any) {
+        const {status, body} = formatError(error);
+        res.status(status).json(body)
     }
 })
 
@@ -71,8 +75,9 @@ booksRoutes.patch("/books/:bookId", async (req: Request, res: Response, next:Fun
             message: "Book updated successfully",
             data : book
         })
-    } catch(error){
-        next(error)
+    } catch (error: any) {
+        const {status, body} = formatError(error);
+        res.status(status).json(body)
     }
 })
 
@@ -89,8 +94,9 @@ booksRoutes.delete("/books/:bookId", async (req: Request, res: Response, next: F
             message: "Book deleted successfully",
             data : null
         })
-    } catch(error){
-        next(error)
+    } catch (error: any) {
+        const {status, body} = formatError(error);
+        res.status(status).json(body)
     }
 })
 

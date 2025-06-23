@@ -47,29 +47,29 @@ const bookSchema = new Schema<BookDocument>({
     timestamps : true
 });
 
+// -------inteface moudle------
 bookSchema.method('decrementStock', async function (quantity: number){
     if (this.copies < quantity) {
-    const customError = {
-        name: "StockError",
-        errors: {
-        copies: {
-            message: "Not enough copies available"
-        }
-        }
-    };
-    // Attach a status if you want
-    (customError as any).status = 400;
-    throw customError;
+        throw {
+            name: "ValidationError",
+            errors: {
+                copies: {
+                    message: "Not enough copies available",
+                    name: "ValidatorError",
+                    properties: {
+                        message: "Not enough copies available",
+                        type: "stock",
+                    },
+                    kind: "stock",
+                    path: "copies",
+                    value: quantity
+                }
+            }
+        };
     }
     this.copies -= quantity;
     this.available = this.copies > 0;
     await this.save();
 })
-
-bookSchema.pre('save', function (next) {
-  // Example: log when a book is saved
-  console.log(`Book "${this.title}" is being saved.`);
-  next();
-});
 
 export const Book = model<BookDocument>("Book", bookSchema);

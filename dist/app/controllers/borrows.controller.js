@@ -16,8 +16,10 @@ exports.borrowsRoutes = void 0;
 const express_1 = __importDefault(require("express"));
 const borrow_models_1 = require("../models/borrow.models");
 const books_models_1 = require("../models/books.models");
+const errorFormatter_1 = require("../../utils/errorFormatter");
 exports.borrowsRoutes = express_1.default.Router();
-exports.borrowsRoutes.post("/borrow", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// -------- borrow book ---------
+exports.borrowsRoutes.post("/borrow", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { book: bookId, quantity, dueDate } = req.body;
         const book = yield books_models_1.Book.findById(bookId);
@@ -42,44 +44,48 @@ exports.borrowsRoutes.post("/borrow", (req, res) => __awaiter(void 0, void 0, vo
         });
     }
     catch (error) {
-        console.error("Error borrowing book:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+        const { status, body } = (0, errorFormatter_1.formatError)(error);
+        res.status(status).json(body);
     }
 }));
-exports.borrowsRoutes.get("/borrow", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const summary = yield borrow_models_1.Borrow.aggregate([
-        {
-            $group: {
-                _id: "$book",
-                totalQuantity: { $sum: "$quantity" }
+// ------ borrow book summery --------
+exports.borrowsRoutes.get("/borrow", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const summary = yield borrow_models_1.Borrow.aggregate([
+            {
+                $group: {
+                    _id: "$book",
+                    totalQuantity: { $sum: "$quantity" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "books",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "bookInfo"
+                }
+            },
+            { $unwind: "$bookInfo" },
+            {
+                $project: {
+                    _id: 0,
+                    book: {
+                        title: "$bookInfo.title",
+                        isbn: "$bookInfo.isbn"
+                    },
+                    totalQuantity: 1
+                }
             }
-        },
-        {
-            $lookup: {
-                from: "books",
-                localField: "_id",
-                foreignField: "_id",
-                as: "bookInfo"
-            }
-        },
-        { $unwind: "$bookInfo" },
-        {
-            $project: {
-                _id: 0,
-                book: {
-                    title: "$bookInfo.title",
-                    isbn: "$bookInfo.isbn"
-                },
-                totalQuantity: 1
-            }
-        }
-    ]);
-    res.status(200).json({
-        success: true,
-        message: "Borrowed books summary retrieved successfully",
-        data: summary
-    });
+        ]);
+        res.status(200).json({
+            success: true,
+            message: "Borrowed books summary retrieved successfully",
+            data: summary
+        });
+    }
+    catch (error) {
+        const { status, body } = (0, errorFormatter_1.formatError)(error);
+        res.status(status).json(body);
+    }
 }));
