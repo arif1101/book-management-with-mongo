@@ -1,111 +1,122 @@
-# 📚 BookStack – Minimal Library Management System
+# Book Management with MongoDB
 
-A clean and minimal library management frontend built with:
+A professional Node.js REST API application using TypeScript, Express, and Mongoose for managing books and borrow records with MongoDB.
 
-- ⚛️ **React + TypeScript**
-- 🎯 **Redux Toolkit Query (RTK Query)**
-- 💨 **Tailwind CSS + DaisyUI**
-- 🔀 **React Router (data mode)**
-- 📋 **React Hook Form**
-- 🔔 **React Hot Toast**
-- ⚠️ **SweetAlert2**
+## Features
 
----
+- **Book Management:**  
+  - Create, read, update, and delete books.
+  - Enforce field validation (title, author, genre, ISBN, copies, etc.).
+  - Unique ISBN and genre validation.
+- **Borrow Management:**  
+  - Borrow books with quantity and due date.
+  - Stock management: prevents borrowing more copies than available.
+- **Robust Error Handling:**  
+  - Consistent JSON error responses for validation, not found, and stock errors.
+- **Filtering & Sorting:**  
+  - Filter books by genre and sort by fields.
+- **API Ready:**  
+  - Easily deployable and ready for integration with frontend or other services.
 
-## 🚀 Features
+## Requirements
 
-- View all books (title, author, genre, ISBN, copies, availability)
-- Add, edit, and delete books
-- Borrow a book (quantity, due date)
-- Borrow summary (aggregated by book)
-- No authentication required
-- Fully responsive design
-- Modal and page-based design pattern
-- Toast notifications & confirmation alerts
+- Node.js (v16 or higher)
+- npm
+- MongoDB instance (local or cloud, e.g., MongoDB Atlas)
 
----
+## Getting Started
 
-## 🧰 Installation & Setup
+### 1. Clone the Repository
 
-### 1️⃣ Clone the repository
-
-```bash
-git clone https://github.com/your-username/bookstack.git
-cd bookstack
+```sh
+git clone https://github.com/your-username/book-management-with-mongo.git
+cd book-management-with-mongo
 ```
 
-### 2️⃣ Install dependencies
+### 2. Install Dependencies
 
-```bash
+```sh
 npm install
 ```
 
----
+### 3. Configure Environment
 
-### 🛠️ Stack Configuration
-
-#### ✅ TailwindCSS + DaisyUI
-
-TailwindCSS and DaisyUI are already configured in `tailwind.config.js`. DaisyUI provides pre-built styled components.
-
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-npm install daisyui
-```
-
-#### ✅ Redux Toolkit + RTK Query
-
-All API logic is organized in:
+Create a `.env` file in the root directory and add your MongoDB connection string:
 
 ```
-src/redux/api/bookCreateApi.ts
+MONGODB_URI=mongodb://localhost:27017/book-management
+PORT=5000
 ```
 
-```bash
-npm install @reduxjs/toolkit react-redux
+> Replace the URI with your own if using MongoDB Atlas or a different setup.
+
+### 4. Initialize TypeScript
+
+```sh
+tsc --init
 ```
 
-#### ✅ React Router (Data mode)
+### 5. Development Scripts
 
-Set up using `createBrowserRouter` and `RouterProvider`.
+Add this to your `package.json` scripts section if not already present:
 
-```bash
-npm install react-router-dom
+```json
+"dev": "ts-node-dev --respawn --transpile-only src/server.ts"
 ```
 
-#### ✅ React Hook Form
+### 6. Start the Development Server
 
-For form handling with validation.
-
-```bash
-npm install react-hook-form
-```
-
-#### ✅ React Hot Toast
-
-For toast alerts (success/failure).
-
-```bash
-npm install react-hot-toast
-```
-
-Add `<Toaster />` once in `MainLayout.tsx`.
-
-#### ✅ SweetAlert2
-
-Used for delete confirmation.
-
-```bash
-npm install sweetalert2
-```
-
----
-
-### 🧪 Start the App
-
-```bash
+```sh
 npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173) in your browser.
+The server will start on the port specified in your `.env` file (default: 5000).
+
+## API Endpoints
+
+### Book Endpoints
+
+- `POST   /api/books`         — Create a new book
+- `GET    /api/books`         — Get all books (with optional filtering/sorting)
+- `GET    /api/books/:id`     — Get a single book by ID
+- `PATCH  /api/books/:id`     — Update a book
+- `DELETE /api/books/:id`     — Delete a book
+
+### Borrow Endpoints
+
+- `POST   /api/borrow`        — Borrow a book
+- `GET    /api/borrow`        — Get all borrow records
+
+## Example Book JSON
+
+```json
+{
+  "title": "Learn with Express",
+  "author": "JESS",
+  "genre": "SCIENCE",
+  "isbn": "20201001",
+  "description": "A book about Express.js",
+  "copies": 10,
+  "available": true
+}
+```
+
+## Example Borrow JSON
+
+```json
+{
+  "book": "BOOK_OBJECT_ID_HERE",
+  "quantity": 2,
+  "dueDate": "2025-07-01T00:00:00.000Z"
+}
+```
+
+## Technologies Used
+
+- [Express](https://expressjs.com/) — Web framework for Node.js
+- [Mongoose](https://mongoosejs.com/) — MongoDB object modeling tool
+- [TypeScript](https://www.typescriptlang.org/) — Typed JavaScript at scale
+- [ts-node-dev](https://github.com/wclr/ts-node-dev) — TypeScript execution and auto-restart for development
+
+---
+**For any questions or contributions, please open an issue or pull request on GitHub.**
