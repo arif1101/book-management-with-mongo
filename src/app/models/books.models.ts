@@ -16,8 +16,8 @@ const bookSchema = new Schema<BookDocument>({
     },
     genre : {
         type : String,
-        required : [true, "required genre from FICTION,NON_FICTION,SCIENCE,HISTORY,BIOGRAPHY,FANTASY"],
-        enum : ["FICTION", "NON_FICTION", "SCIENCE", "HISTORY", "BIOGRAPHY", "FANTASY"],
+        required : [true, "required genre from FICTION,NON_FICTION,SCIENCE,HISTORY,BIOGRAPHY,FANTASY,OTHER"],
+        enum : ["FICTION", "NON_FICTION", "SCIENCE", "HISTORY", "BIOGRAPHY", "FANTASY","OTHER"],
     },
     isbn : {
         type : String,
