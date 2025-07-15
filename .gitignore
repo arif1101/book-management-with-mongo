@@ -1,1 +1,5 @@
+temp_auto_push.bat
 .vercel
+.gitignore
+config.bat
+node_modules
